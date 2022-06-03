@@ -73,8 +73,6 @@ app.MapGet("/statistics/minmaxprice/{start_date}/{end_date}", MinMaxPrice);
 
 app.Run();
 
-
-
 IResult All()
 {
     var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
