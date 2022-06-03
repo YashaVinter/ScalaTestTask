@@ -22,7 +22,7 @@ using (var scope = app.Services.CreateScope())
     AppDBContext context = scope.ServiceProvider.GetRequiredService<AppDBContext>();
     // TODO read from json
     string href = @"https://data.gov.ru/sites/default/files/otkrytye_dannye_-_cena_na_neft_25.csv";
-     string dataPath = @"C:\Users\User\source\repos\ScalaTestTask\resources\data\urals.csv";
+    string dataPath = app.Configuration["DataBase:CsvPath"];
     var seedData = new OilDataCSV(dataPath);
     context.Init(seedData.OilPrices);
 }
@@ -36,31 +36,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-//app.MapGet("/weatherforecast", () =>
-//{
-//    var forecast = Enumerable.Range(1, 5).Select(index =>
-//       new WeatherForecast
-//       (
-//           DateTime.Now.AddDays(index),
-//           Random.Shared.Next(-20, 55),
-//           summaries[Random.Shared.Next(summaries.Length)]
-//       ))
-//        .ToArray();
-//    return forecast;
-//})
-//.WithName("GetWeatherForecast");
 
-//async Task GetPrices(HttpContext context, RequestDelegate next)
-//{
-//    string d1 = context.Request.Query["startdate"];
-//    string d2 = context.Request.Query["enddate"];
-//    await next.Invoke(context);
-//}
+
 app.MapGet("/test/{string?}", (string s) => 
 {
     return Results.Text(s);
@@ -73,6 +51,7 @@ app.MapGet("/statistics/minmaxprice/{start_date}/{end_date}", MinMaxPrice);
 
 app.Run();
 
+// Map delegate handlers
 IResult All()
 {
     var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
@@ -137,9 +116,4 @@ IResult MinMaxPrice(string startDateString, string endDateString)
     {
         return Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
-}
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
