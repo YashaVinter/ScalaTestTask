@@ -56,7 +56,7 @@ IResult PriceByDate(DateTime date)
 }
 IResult AveragePrice(string startDateString, string endDateString) 
 {
-    DateTime startDate, endDate;
+    IResult result;
     try
     {
         var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
@@ -64,39 +64,37 @@ IResult AveragePrice(string startDateString, string endDateString)
 
         var dateRange = validation.Validate(startDateString, endDateString);
         var avgPrice =  oilStats.AveragePrice(dateRange);
-        return Results.Ok(avgPrice);
+        result =  Results.Ok(avgPrice);
     }    
     catch (FormatException ex)
     {
-        return Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+        result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
     catch (ArgumentException ex)
     {
-        return Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+        result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
+    return result;
 }
 IResult MinMaxPrice(string startDateString, string endDateString) 
 {
-    DateTime startDate, endDate;
+    IResult result;
     try
     {
-        // TODO add validation service
-        startDate = DateTime.Parse(startDateString);
-        endDate = DateTime.Parse(endDateString);
-        if (startDate > endDate)
-        {
-            throw new ArgumentException("Incorrect date order");
-        }
         var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
-        var avgPrice = oilStats.MinMaxPrice(new DateTimeRange { Start = startDate, End = endDate });
-        return Results.Ok(avgPrice);
+        var validation = app.Services.GetRequiredService<DateTimeRangeValidation>();
+
+        var dateRange = validation.Validate(startDateString, endDateString);
+        var minMaxJson = oilStats.MinMaxPrice(dateRange);
+        result =  Results.Ok(minMaxJson);
     }
     catch (FormatException ex)
     {
-        return Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+        result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
     catch (ArgumentException ex)
     {
-        return Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+        result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
+    return result;  
 }
