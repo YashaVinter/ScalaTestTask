@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext();
 builder.Services.AddTransient<OilPriceStatistics>();
+builder.Services.AddTransient<AccordStatistics>();
 builder.Services.AddTransient<DateTimeValidation>();
 var app = builder.Build();
 
@@ -33,8 +34,13 @@ app.UseHttpsRedirection();
 
 app.MapGet("/statistics/prices", All);
 app.MapGet("/statistics/prices/{date}", PriceByDate);
-app.MapGet("/statistics/prices/average/{start_date}/{end_date}", AveragePrice);
 app.MapGet("/statistics/prices/minmax/{start_date}/{end_date}", MinMaxPrice);
+app.MapGet("/statistics/prices/average/{start_date}/{end_date}", AveragePrice);
+app.MapGet("/statistics/prices/math_expectation/{start_date}/{end_date}", MathExpectationPrice);
+app.MapGet("/statistics/prices/variance/{start_date}/{end_date}", PriceVariance);
+app.MapGet("/statistics/prices/standard_deviation/{start_date}/{end_date}", PriceStandardDeviation);
+app.MapGet("/statistics/prices/linear_regression/{start_date}/{end_date}", PriceLinearRegression);
+
 
 app.Run();
 
@@ -66,6 +72,29 @@ IResult PriceByDate(HttpContext context, string dateString)
     app.Logger.LogInformation(message: LogData(context.Request.Path));
     return result;
 }
+IResult MinMaxPrice(HttpContext context, string startDateString, string endDateString)
+{
+    IResult result;
+    try
+    {
+        var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
+
+        var dateRange = validation.Validate(startDateString, endDateString);
+        var minMaxJson = oilStats.MinMaxPrice(dateRange);
+        result = Results.Ok(minMaxJson);
+    }
+    catch (FormatException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    catch (ArgumentException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
+    return result;
+}
 IResult AveragePrice(HttpContext context, string startDateString, string endDateString) 
 {
     IResult result;
@@ -89,7 +118,7 @@ IResult AveragePrice(HttpContext context, string startDateString, string endDate
     app.Logger.LogInformation(message: LogData(context.Request.Path));
     return result;
 }
-IResult MinMaxPrice(HttpContext context, string startDateString, string endDateString) 
+IResult MathExpectationPrice(HttpContext context, string startDateString, string endDateString)
 {
     IResult result;
     try
@@ -98,19 +127,88 @@ IResult MinMaxPrice(HttpContext context, string startDateString, string endDateS
         var validation = app.Services.GetRequiredService<DateTimeValidation>();
 
         var dateRange = validation.Validate(startDateString, endDateString);
-        var minMaxJson = oilStats.MinMaxPrice(dateRange);
-        result =  Results.Ok(minMaxJson);
+        var avgPrice = oilStats.MathExpectationPrice(dateRange);
+        result = Results.Ok(avgPrice);
     }
     catch (FormatException ex)
     {
-        result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
     catch (ArgumentException ex)
     {
-        result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
     app.Logger.LogInformation(message: LogData(context.Request.Path));
-    return result;  
+    return result;
+}
+IResult PriceVariance(HttpContext context, string startDateString, string endDateString)
+{
+    IResult result;
+    try
+    {
+        var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
+
+        var dateRange = validation.Validate(startDateString, endDateString);
+        var avgPrice = oilStats.PriceVariance(dateRange);
+        result = Results.Ok(avgPrice);
+    }
+    catch (FormatException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    catch (ArgumentException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
+    return result;
+}
+IResult PriceStandardDeviation(HttpContext context, string startDateString, string endDateString)
+{
+    IResult result;
+    try
+    {
+        var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
+
+        var dateRange = validation.Validate(startDateString, endDateString);
+        var avgPrice = oilStats.PriceStandardDeviation(dateRange);
+        result = Results.Ok(avgPrice);
+    }
+    catch (FormatException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    catch (ArgumentException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
+    return result;
+}
+IResult PriceLinearRegression(HttpContext context, string startDateString, string endDateString)
+{
+    IResult result;
+    try
+    {
+        var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
+
+        var dateRange = validation.Validate(startDateString, endDateString);
+        var avgPrice = oilStats.PriceLinearRegression(dateRange);
+        result = Results.Ok(avgPrice);
+    }
+    catch (FormatException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    catch (ArgumentException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
+    return result;
 }
 
 string LogData(string requestPath) 

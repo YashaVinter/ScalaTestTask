@@ -1,4 +1,11 @@
-﻿namespace ScalaTestTask.models
+﻿using System;
+namespace ScalaTestTask.models
 {
-    public record DateTimeRange(DateTime Start, DateTime End);
+    public class DateTimeRange
+    {
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public TimeSpan Diff => End - Start;
+
+    }
 }

@@ -74,7 +74,7 @@ namespace ScalaTestTask.services.implementations
                 var begin = DateParser(values[0]);
                 var end = DateParser(values[1]);
                 var pr = Convert.ToDecimal(values[2]);
-                return new OilPriceInfo ( new DateTimeRange (begin,end), pr );
+                return new OilPriceInfo ( new DateTimeRange { Start = begin,End = end}, pr );
             }
             catch (FormatException)
             {              
