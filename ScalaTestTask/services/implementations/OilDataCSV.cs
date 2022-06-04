@@ -9,10 +9,40 @@ namespace ScalaTestTask.services.implementations
     public class OilDataCSV : IDbService
     {
         private readonly OilPriceInfo[] _oilInfoes;
+        private static async Task DownloadFileAsync(Uri uri, string csvFile)
+        {
+            if (File.Exists(csvFile))
+            {
+                return;
+            }
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(uri);
+            using var fs = File.Create(csvFile);
+            await response.Content.CopyToAsync(fs);
+        }
+        private static void DownloadFile(Uri uri, string csvFile)
+        {
+            if (File.Exists(csvFile))
+            {
+                return;
+            }
+            HttpClient client = new HttpClient();
+            var responseTask = client.GetAsync(uri);
+            responseTask.Wait();
+            var response = responseTask.Result;
+            using var fs = File.Create(csvFile);
+            response.Content.CopyTo(fs, null, new CancellationToken());
+        }
         public OilDataCSV(string csvFile)
         {
             _oilInfoes = CsvParcer(csvFile);
         }
+        public OilDataCSV(Uri uri, string csvFile)
+        {
+            DownloadFile(uri, csvFile);
+            _oilInfoes = CsvParcer(csvFile);
+        }
+
         public OilPriceInfo[] OilPrices => _oilInfoes;
         /// <summary>
         /// 

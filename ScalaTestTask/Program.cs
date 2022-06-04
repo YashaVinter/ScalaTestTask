@@ -2,8 +2,7 @@ using Newtonsoft.Json;
 using ScalaTestTask.extensions;
 using ScalaTestTask.models;
 using ScalaTestTask.services.implementations;
-
-
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +19,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     AppDBContext context = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-    // TODO read from json
-    string href = @"https://data.gov.ru/sites/default/files/otkrytye_dannye_-_cena_na_neft_25.csv";
-    string dataPath = app.Configuration["DataBase:CsvPath"];
-    var seedData = new OilDataCSV(dataPath);
+    var seedData = new OilDataCSV(new Uri(app.Configuration["DataBase:URI"]), app.Configuration["DataBase:CsvPath"]);
     context.Init(seedData.OilPrices);
 }
 
@@ -36,16 +32,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-
-
-app.MapGet("/test/{string?}", (string s) => 
-{
-    return Results.Text(s);
-});
 app.MapGet("/statistics/price", All);
 app.MapGet("/statistics/price/{date:datetime}", PriceByDate);
-//app.Use(GetPrices); 
 app.MapGet("/statistics/avgprice/{start_date}/{end_date}", AveragePrice);
 app.MapGet("/statistics/minmaxprice/{start_date}/{end_date}", MinMaxPrice);
 
