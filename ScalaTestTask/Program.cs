@@ -52,7 +52,7 @@ IResult PriceByDate(DateTime date)
     {
         return Results.Ok(price);
     }
-    return Results.NotFound();
+    return Results.BadRequest();
 }
 IResult AveragePrice(string startDateString, string endDateString) 
 {
