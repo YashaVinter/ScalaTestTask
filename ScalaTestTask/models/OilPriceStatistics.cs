@@ -16,8 +16,8 @@ namespace ScalaTestTask.models
         public decimal? PriceByDate(DateTime date)
         {
             var priceQuery = (from oilInfo in _context.OilPrices
-                      where (oilInfo.DateRange.Start < date) && (oilInfo.DateRange.End > date)
-                      select oilInfo.AvgPrice);
+                              where (oilInfo.DateRange.Start < date) && (date < oilInfo.DateRange.End )
+                              select oilInfo.AvgPrice);
             return priceQuery.Any() ? priceQuery.First() : null;
         }
         public decimal AveragePrice(DateTimeRange dateRange)
