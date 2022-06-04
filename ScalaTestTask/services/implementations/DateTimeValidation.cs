@@ -2,8 +2,17 @@
 using System;
 namespace ScalaTestTask.services.implementations
 {
-    public class DateTimeRangeValidation
+    public class DateTimeValidation
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="FormatException">when things go wrong.</exception>
+        public DateTime Validate(string dateString)
+        {
+            return DateTime.Parse(dateString);
+        }
         /// <summary>
         /// 
         /// </summary>

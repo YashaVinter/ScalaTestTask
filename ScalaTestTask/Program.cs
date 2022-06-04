@@ -11,7 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext();
 builder.Services.AddTransient<OilPriceStatistics>();
-builder.Services.AddTransient<DateTimeRangeValidation>();
+builder.Services.AddTransient<DateTimeValidation>();
 var app = builder.Build();
 
 // add seed data to db
@@ -32,35 +32,47 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGet("/statistics/price", All);
-app.MapGet("/statistics/price/{date:datetime}", PriceByDate);
+app.MapGet("/statistics/price/{date}", PriceByDate);
 app.MapGet("/statistics/avgprice/{start_date}/{end_date}", AveragePrice);
 app.MapGet("/statistics/minmaxprice/{start_date}/{end_date}", MinMaxPrice);
 
 app.Run();
 
 // Map delegate handlers
-IResult All()
+IResult All(HttpContext context)
 {
     var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
     return Results.Ok(oilStats.AllOilRecords());
 }
-IResult PriceByDate(DateTime date) 
+IResult PriceByDate(HttpContext context, string dateString) 
 {
-    var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
-
-    if (oilStats.PriceByDate(date) is decimal price)
+    IResult result = Results.BadRequest();
+    try
     {
-        return Results.Ok(price);
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
+        DateTime date = validation.Validate(dateString);
+
+        var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
+        if (oilStats.PriceByDate(date) is decimal price)
+        {
+            result = Results.Ok(price);
+        }    
     }
-    return Results.BadRequest();
+    catch (FormatException ex)
+    {
+        result = Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
+    }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
+    return result;
 }
-IResult AveragePrice(string startDateString, string endDateString) 
+IResult AveragePrice(HttpContext context, string startDateString, string endDateString) 
 {
     IResult result;
     try
     {
         var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
-        var validation = app.Services.GetRequiredService<DateTimeRangeValidation>();
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
 
         var dateRange = validation.Validate(startDateString, endDateString);
         var avgPrice =  oilStats.AveragePrice(dateRange);
@@ -74,15 +86,16 @@ IResult AveragePrice(string startDateString, string endDateString)
     {
         result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
     return result;
 }
-IResult MinMaxPrice(string startDateString, string endDateString) 
+IResult MinMaxPrice(HttpContext context, string startDateString, string endDateString) 
 {
     IResult result;
     try
     {
         var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
-        var validation = app.Services.GetRequiredService<DateTimeRangeValidation>();
+        var validation = app.Services.GetRequiredService<DateTimeValidation>();
 
         var dateRange = validation.Validate(startDateString, endDateString);
         var minMaxJson = oilStats.MinMaxPrice(dateRange);
@@ -96,5 +109,12 @@ IResult MinMaxPrice(string startDateString, string endDateString)
     {
         result =  Results.BadRequest(new { statusCode = StatusCodes.Status400BadRequest, error = ex.Message });
     }
+    app.Logger.LogInformation(message: LogData(context.Request.Path));
     return result;  
+}
+
+string LogData(string requestPath) 
+{
+    var now = DateTime.Now;
+    return $"{now.ToShortDateString()}\t{now.ToLongTimeString()}\t Request {requestPath} has been processed";
 }
