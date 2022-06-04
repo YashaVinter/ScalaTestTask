@@ -31,10 +31,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/statistics/price", All);
-app.MapGet("/statistics/price/{date}", PriceByDate);
-app.MapGet("/statistics/avgprice/{start_date}/{end_date}", AveragePrice);
-app.MapGet("/statistics/minmaxprice/{start_date}/{end_date}", MinMaxPrice);
+app.MapGet("/statistics/prices", All);
+app.MapGet("/statistics/prices/{date}", PriceByDate);
+app.MapGet("/statistics/prices/average/{start_date}/{end_date}", AveragePrice);
+app.MapGet("/statistics/prices/minmax/{start_date}/{end_date}", MinMaxPrice);
 
 app.Run();
 

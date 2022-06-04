@@ -1,4 +1,5 @@
-﻿using ScalaTestTask.services.interfaces;
+﻿using ScalaTestTask.models;
+using ScalaTestTask.services.interfaces;
 using System;
 namespace ScalaTestTask.services.implementations
 {
@@ -9,10 +10,10 @@ namespace ScalaTestTask.services.implementations
         {
             _context = context;
         }
-        public void MyMethod()
+        public OilPriceInfo[] AllPrices()
         {
-            
-            throw new NotImplementedException();
+
+            return _context.OilPrices;
         }
     }
 }

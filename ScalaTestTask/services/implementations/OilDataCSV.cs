@@ -71,10 +71,10 @@ namespace ScalaTestTask.services.implementations
             try
             {
                 var values = csvLine.Split(';');
-                var d1 = DateParser(values[0]);
-                var d2 = DateParser(values[1]);
+                var begin = DateParser(values[0]);
+                var end = DateParser(values[1]);
                 var pr = Convert.ToDecimal(values[2]);
-                return new OilPriceInfo ( new DateTimeRange { Start = d1, End = d2}, pr );
+                return new OilPriceInfo ( new DateTimeRange (begin,end), pr );
             }
             catch (FormatException)
             {              

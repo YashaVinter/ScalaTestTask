@@ -27,7 +27,7 @@ namespace ScalaTestTask.services.implementations
             {
                 throw new ArgumentException("Incorrect date order");
             }
-            return new DateTimeRange { Start = startDate, End = endDate };
+            return new DateTimeRange (startDate, endDate );
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿namespace ScalaTestTask.models
 {
-    public struct DateTimeRange
-    {
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-    }
+    public record DateTimeRange(DateTime Start, DateTime End);
 }
