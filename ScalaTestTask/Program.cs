@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext();
 builder.Services.AddTransient<OilPriceStatistics>();
+builder.Services.AddTransient<DateTimeRangeValidation>();
 var app = builder.Build();
 
 // add seed data to db
@@ -58,15 +59,11 @@ IResult AveragePrice(string startDateString, string endDateString)
     DateTime startDate, endDate;
     try
     {
-        // TODO add validation service
-        startDate = DateTime.Parse(startDateString);
-        endDate = DateTime.Parse(endDateString);
-        if (startDate > endDate)
-        {
-            throw new ArgumentException("Incorrect date order");
-        }
         var oilStats = app.Services.GetRequiredService<OilPriceStatistics>();
-        var avgPrice =  oilStats.AveragePrice(new DateTimeRange { Start = startDate, End = endDate });
+        var validation = app.Services.GetRequiredService<DateTimeRangeValidation>();
+
+        var dateRange = validation.Validate(startDateString, endDateString);
+        var avgPrice =  oilStats.AveragePrice(dateRange);
         return Results.Ok(avgPrice);
     }    
     catch (FormatException ex)
