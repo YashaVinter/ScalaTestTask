@@ -56,13 +56,13 @@
     <td>Имя</td><td>Тип</td><td>Пример</td><td>Описание</td>
   </tr>
   <tr>
-    <td>date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yy</td>
+    <td>date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yyyy</td>
   </tr>
     <tr>
-    <td>start_date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yy, требуемое условие: <code>start_date > end_date</code></td>
+    <td>start_date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yyyy, требуемое условие: <code>start_date > end_date</code></td>
   </tr>
     <tr>
-    <td>end_date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yy, требуемое условие: <code>start_date > end_date</code></td>
+    <td>end_date</td><td>DateTime</td><td>01/09/2015</td><td>Дата, требуемый формат: dd/MM/yy, требуемое условие: <code>start_date > end_date</code></td>
   </tr>
 </table>
 
@@ -82,7 +82,7 @@
   </tr>
   <tr>
     <td>prices</td><td>Json</td><td><code>[  {"start_date":2013-10-15T00:00:00, "end_date":2013-11-14T00:00:00,"price":384.2},
-    {"start_date": "2013-11-15T00:00:00","end_date": "2013-12-14T00:00:00","price": 802.2}]</code></td><td>Математическое ожидание</td>
+    {"start_date": "2013-11-15T00:00:00","end_date": "2013-12-14T00:00:00","price": 802.2}]</code></td><td>перечень данных о ценах</td>
   </tr>
   <tr>
     <td>minmax</td><td>json</td><td><code>{"min": 250, "max": 384.2}</code></td><td>Минимум и максимум цены на промежутке вермени</td>
