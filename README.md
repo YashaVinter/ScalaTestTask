@@ -1,7 +1,5 @@
 # ScalaTestTask
 
-### Разработчик: Винтер Яков - https://github.com/YashaVinter 
-
 ### Описание проделанной работы:
 - Создан сервер WEB API отправляющий статистику о ценах на нефть за различные промежутки времени
  - Исходные данные для сервера берутся из URI указанного в задании
@@ -59,10 +57,10 @@
     <td>date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yyyy</td>
   </tr>
     <tr>
-    <td>start_date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yyyy, требуемое условие: <code>start_date > end_date</code></td>
+    <td>start_date</td><td>DateTime</td><td>01/06/2015</td><td>Дата, требуемый формат: dd/MM/yyyy, требуемое условие: <code>start_date < end_date</code></td>
   </tr>
     <tr>
-    <td>end_date</td><td>DateTime</td><td>01/09/2015</td><td>Дата, требуемый формат: dd/MM/yy, требуемое условие: <code>start_date > end_date</code></td>
+    <td>end_date</td><td>DateTime</td><td>01/09/2015</td><td>Дата, требуемый формат: dd/MM/yy, требуемое условие: <code>start_date < end_date</code></td>
   </tr>
 </table>
 
